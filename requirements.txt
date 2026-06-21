@@ -1,5 +1,8 @@
-# Runtime
-anthropic>=0.40
+# The extractor, evaluator, and test suite are STANDARD-LIBRARY ONLY.
+# Nothing here is required to run `python3 -m pytest -q` or `python3 evaluator.py`.
 
-# Testing
+# Testing (any recent pytest works; the suite uses no plugins).
 pytest>=8.0
+
+# Optional — only needed for the live LLM extraction path (`extractor.py --llm`).
+# anthropic>=0.40

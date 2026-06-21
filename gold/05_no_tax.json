@@ -1,0 +1,12 @@
+{
+  "vendor": "Nomad Freelance Studio",
+  "date": "2024-12-05",
+  "currency": "USD",
+  "line_items": [
+    {"description": "Logo design package", "qty": 1, "unit_price": 600.0, "amount": 600.0},
+    {"description": "Brand guidelines doc", "qty": 1, "unit_price": 250.0, "amount": 250.0}
+  ],
+  "subtotal": 850.0,
+  "tax": null,
+  "total": 850.0
+}

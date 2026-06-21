@@ -1,0 +1,14 @@
+{
+  "vendor": "Acme Cloud Supplies, LLC",
+  "date": "2025-03-14",
+  "currency": "USD",
+  "line_items": [
+    {"description": "Managed Postgres (prod)", "qty": 1, "unit_price": 149.0, "amount": 149.0},
+    {"description": "Object storage tier", "qty": 1, "unit_price": 45.0, "amount": 45.0},
+    {"description": "Premium support (monthly)", "qty": 2, "unit_price": 25.5, "amount": 51.0},
+    {"description": "Setup fee (one-time)", "qty": 1, "unit_price": 120.0, "amount": 120.0}
+  ],
+  "subtotal": 365.0,
+  "tax": 31.03,
+  "total": 396.03
+}

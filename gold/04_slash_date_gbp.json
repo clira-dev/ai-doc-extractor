@@ -1,0 +1,13 @@
+{
+  "vendor": "Thistle & Pine Ltd",
+  "date": "2025-04-07",
+  "currency": "GBP",
+  "line_items": [
+    {"description": "Oak shelf (large)", "qty": 1, "unit_price": 210.0, "amount": 210.0},
+    {"description": "Wall bracket set", "qty": 4, "unit_price": 12.5, "amount": 50.0},
+    {"description": "Delivery", "qty": 1, "unit_price": 35.0, "amount": 35.0}
+  ],
+  "subtotal": 295.0,
+  "tax": 59.0,
+  "total": 354.0
+}

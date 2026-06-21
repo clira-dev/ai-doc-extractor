@@ -1,0 +1,9 @@
+From: QuickPrint Kiosk
+
+03/30/2025
+
+Poster A1 matte         1     18.00     18.00
+
+Subtotal    18.00
+Tax          1.53
+Total      $19.53

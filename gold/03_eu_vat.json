@@ -1,0 +1,12 @@
+{
+  "vendor": "Helvetic Bytes GmbH",
+  "date": "2025-01-31",
+  "currency": "EUR",
+  "line_items": [
+    {"description": "Consulting (hours)", "qty": 10, "unit_price": 85.0, "amount": 850.0},
+    {"description": "Travel reimbursement", "qty": 1, "unit_price": 120.0, "amount": 120.0}
+  ],
+  "subtotal": 970.0,
+  "tax": 74.69,
+  "total": 1044.69
+}

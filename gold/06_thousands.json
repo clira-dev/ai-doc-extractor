@@ -1,0 +1,13 @@
+{
+  "vendor": "Granite Datacenter Services",
+  "date": "2025-02-28",
+  "currency": "USD",
+  "line_items": [
+    {"description": "Dedicated rack (annual)", "qty": 1, "unit_price": 9600.0, "amount": 9600.0},
+    {"description": "Bandwidth overage", "qty": 3, "unit_price": 450.0, "amount": 1350.0},
+    {"description": "Remote hands", "qty": 12, "unit_price": 150.0, "amount": 1800.0}
+  ],
+  "subtotal": 12750.0,
+  "tax": 1083.75,
+  "total": 13833.75
+}

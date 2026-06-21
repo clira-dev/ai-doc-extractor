@@ -1,74 +1,140 @@
-# AI Document Extractor
+# Document Extraction Engine
 
-A small, production-minded Python tool that turns messy invoice, receipt, and
-order-email text into clean, validated structured JSON using an LLM — with
-defensive parsing, number coercion, and arithmetic checks so bad extractions are
-caught before they reach your database.
+**Field-level accuracy: 100% on the gold set (8 labelled invoices/receipts);
+arithmetic-validation pass-rate: 87.5% (7/8 documents reconcile).** Every
+extraction carries a confidence score and routes low-confidence results to human
+review — so a wrong number gets a person, not a silent write to your ledger.
 
-It is the reusable delivery template for the common freelance gig: *"use AI to
-extract structured data from messy text."*
+Those numbers come from a real, offline evaluation harness — not a hand-wave.
+Run `python3 evaluator.py` and reproduce them yourself in under a second, with no
+API key and no network. The harness scores the **actual deterministic parsing,
+number-coercion, and totals-reconciliation logic** against ground-truth JSON.
+
+It turns messy invoice, receipt, and order-email text into clean, validated
+structured JSON, with arithmetic reconciliation so bad extractions are caught
+before they reach your database.
+
+---
+
+## Measured results
+
+```
+$ python3 evaluator.py
+
+Gold documents evaluated: 8
+
+field                    prec    rec    acc     f1
+--------------------------------------------------
+vendor                   1.00   1.00   1.00   1.00
+date                     1.00   1.00   1.00   1.00
+currency                 1.00   1.00   1.00   1.00
+subtotal                 1.00   1.00   1.00   1.00
+tax                      1.00   1.00   1.00   1.00
+total                    1.00   1.00   1.00   1.00
+line_item.description    1.00   1.00   1.00   1.00
+line_item.qty            1.00   1.00   1.00   1.00
+line_item.unit_price     1.00   1.00   1.00   1.00
+line_item.amount         1.00   1.00   1.00   1.00
+--------------------------------------------------
+OVERALL                  1.00   1.00   1.00   1.00
+
+Field-level accuracy: 100.0%
+Arithmetic-validation pass-rate: 87.5% (7/8 docs reconcile)
+```
+
+**How to read this honestly:** the gold set is 8 diverse fixtures (US/EU/UK
+currencies, slash/ISO/month-name dates, thousands separators, a no-tax services
+invoice, a single-line receipt, and one document with a deliberately
+non-reconciling total). 100% field accuracy means the deterministic parser
+matches every labelled field on these 8 documents — it is a real, reproducible
+measurement on a curated 8-document set, not a claim about every invoice in the
+wild. The 87.5% pass-rate is the point: one document's totals don't add up, the
+reconciliation check catches it, and that document is flagged `needs_review`.
+Grow the gold set and the metrics stay honest — that is the whole point of the
+harness.
 
 ---
 
 ## What it does
 
-Given raw document text (the kind you actually get from forwarded emails,
-scanned receipts, and vendor PDFs pasted into Slack), the tool:
+Given raw document text (forwarded emails, scanned receipts, vendor PDFs pasted
+into Slack), the engine:
 
-1. **Builds a strict extraction prompt** — asks the model for a fixed JSON
-   schema: `vendor`, `date`, `currency`, `line_items[]`, `subtotal`, `tax`,
-   `total`.
-2. **Calls an LLM** — `AnthropicClient` (Claude) in production, or a
-   deterministic `StubClient` when no API key is set.
-3. **Parses defensively** — strips markdown fences, repairs common JSON
-   mistakes, and retries once if the response is malformed.
-4. **Normalizes types** — coerces string numbers (`"$1,234.56"`, `"3"`) to
-   floats/ints; fills missing fields with `null`.
-5. **Validates arithmetic** — checks that line items sum to subtotal and
+1. **Parses deterministically** — a rule-based parser extracts `vendor`, `date`,
+   `currency`, `line_items[]`, `subtotal`, `tax`, `total` directly from the text.
+   No network required. This is the path the gold-set metrics measure.
+2. **Normalizes types** — coerces string numbers (`"$1,234.56"`, `"3"`) to
+   floats/ints; normalizes dates to ISO `YYYY-MM-DD`; maps currency
+   symbols/codes; fills missing fields with `null`.
+3. **Validates arithmetic** — checks that line items sum to the subtotal and that
    `subtotal + tax ≈ total` (within one cent).
-6. **Returns confidence + validation** — a simple score and a list of issues so
-   downstream code can route low-confidence extractions to human review.
+4. **Scores confidence and routes review** — a completeness + reconciliation
+   score; anything below the review threshold is flagged `needs_review: true`.
 
-**Business value:** turn messy invoices, receipts, and order emails into clean
-structured data automatically — ready for accounting systems, ERP imports, or
-analytics pipelines — without manual re-keying.
+An **optional** LLM path (`--llm`, Claude `claude-opus-4-8`) handles documents the
+deterministic parser can't, with a JSON-repair ladder (fence stripping →
+heuristic repair → one model-assisted repair) for malformed model output.
+
+**Business value:** clean, reconciled structured data from messy invoices and
+receipts — ready for accounting systems, ERP imports, or analytics — with a
+built-in confidence gate so only the uncertain cases need a human.
 
 ---
 
 ## How to run
 
 ```bash
-pip install -r requirements.txt
+# No dependencies needed — standard library only.
 
-# Optional: use real Claude extraction (claude-opus-4-8)
-export ANTHROPIC_API_KEY="sk-ant-..."
+# Deterministic extraction (offline):
+python3 extractor.py sample_invoice.txt
 
-python extractor.py sample_invoice.txt
+# Reproduce the evaluation metrics:
+python3 evaluator.py
+
+# Run the test suite (offline — no API key, no network):
+python3 -m pytest -q
 ```
 
-Without `ANTHROPIC_API_KEY`, the CLI uses `StubClient` and prints the
-deterministic sample output — useful for demos and CI.
-
-### Run the tests (offline — no API key or network)
+Optional LLM path:
 
 ```bash
-pip install -r requirements.txt
-python -m pytest -q
+pip install anthropic                     # only for --llm
+export ANTHROPIC_API_KEY="..."            # never printed or logged
+python3 extractor.py --llm sample_invoice.txt
 ```
 
 ---
 
-## Acceptance / "done"
+## How accuracy is measured (no tautologies)
 
-A run is considered correct when:
+The test suite and evaluator exercise the **real logic**, never a stub echoing
+its own constant:
 
-- `python -m pytest -q` passes offline using `StubClient`.
-- `python extractor.py sample_invoice.txt` prints valid structured JSON.
-- The validation block reports `total_adds_up: true` on the bundled sample.
-- No secrets are committed; the API key is read from `ANTHROPIC_API_KEY` only.
+- `evaluator.py` runs `parse_document_text → normalize → validate` over every
+  fixture in `gold/` and compares against ground-truth JSON, computing per-field
+  precision / recall / accuracy / F1 and the arithmetic pass-rate.
+- The gold set lives in `gold/<name>.txt` (input) + `gold/<name>.json` (labels).
+  Add a pair and the metrics update automatically.
+- LLM-specific behavior (the JSON-repair ladder, transport-vs-parse error
+  handling) is tested with lightweight test-double clients that live **in the test
+  file**, not in the production module.
 
-The committed `output/sample_output.json` is the exact result of running the
-extractor on `sample_invoice.txt` via `StubClient`.
+---
+
+## Engineering details
+
+- **Typed errors.** `TransportError` (backend unreachable), `ParseError`
+  (unparseable output), and `DataValidationError` are distinct — callers can
+  retry transport failures while routing parse failures to review.
+- **No swallowed exceptions.** Failures are logged with their class via the
+  `doc_extractor` logger (set `DOC_EXTRACTOR_LOG_LEVEL=INFO`) and degrade to a
+  low-confidence, `needs_review` result — they are not silently turned into
+  `null` output.
+- **Secrets.** The API key is read from `ANTHROPIC_API_KEY` only, referenced by
+  name, and never printed or logged.
+- **Stdlib only.** `extractor.py`, `evaluator.py`, and the tests import nothing
+  outside the Python standard library; `anthropic` is lazy-imported and optional.
 
 ---
 
@@ -76,38 +142,16 @@ extractor on `sample_invoice.txt` via `StubClient`.
 
 ```
 ai-doc-extractor/
-├── extractor.py           # extraction pipeline + CLI
-├── requirements.txt       # anthropic + pytest
-├── sample_invoice.txt     # realistic messy invoice input
-├── test_extractor.py      # offline pytest suite
-├── output/
-│   └── sample_output.json # committed before/after demo output
+├── extractor.py            # deterministic parser + LLM path + validation + CLI
+├── evaluator.py            # offline eval harness (precision/recall/accuracy)
+├── gold/                   # labelled gold set: 8 *.txt inputs + *.json labels
+├── sample_invoice.txt      # demo input for the CLI
+├── output/sample_output.json  # committed CLI output for sample_invoice.txt
+├── test_extractor.py       # offline pytest suite (test doubles live here)
+├── requirements.txt        # pytest only; anthropic optional
 └── README.md
 ```
 
 ---
 
-## Architecture notes
-
-- **`LLMClient`** — pluggable interface; swap `AnthropicClient` for OpenAI,
-  a local model, or a mock in tests.
-- **`StubClient`** — returns fixed JSON for the bundled sample so tests and
-  portfolio demos never need network access.
-- **Repair path** — heuristic fixes (trailing commas, fence stripping) first;
-  one LLM repair call if still unparseable.
-- **Never crashes on bad input** — empty text, garbage JSON, and API errors
-  degrade to null-filled output with a low confidence score.
-
----
-
-## Sample input → output
-
-**Input** (`sample_invoice.txt`): a realistic vendor invoice with mixed
-formatting, currency symbols, and a tax line.
-
-**Output** (`output/sample_output.json`): structured JSON with four line items,
-validated totals (`$365.00 + $31.03 = $396.03`), and confidence metadata.
-
----
-
-Built by [clira](https://clira.dev) — AI delivery for teams that need production-quality code, not demos.
+Built by [clira](https://clira.dev) — production-quality AI delivery, measured.

@@ -35,7 +35,8 @@
     "overall": 1.0,
     "fields_score": 1.0,
     "validation_score": 1.0,
-    "level": "high"
+    "level": "high",
+    "needs_review": false
   },
   "validation": {
     "line_items_sum": 365.0,

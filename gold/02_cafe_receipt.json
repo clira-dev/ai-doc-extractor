@@ -1,0 +1,13 @@
+{
+  "vendor": "Blue Door Cafe",
+  "date": "2025-03-02",
+  "currency": "USD",
+  "line_items": [
+    {"description": "Flat White", "qty": 2, "unit_price": 4.5, "amount": 9.0},
+    {"description": "Almond Croissant", "qty": 3, "unit_price": 3.25, "amount": 9.75},
+    {"description": "Sparkling Water", "qty": 1, "unit_price": 2.5, "amount": 2.5}
+  ],
+  "subtotal": 21.25,
+  "tax": 1.81,
+  "total": 23.06
+}

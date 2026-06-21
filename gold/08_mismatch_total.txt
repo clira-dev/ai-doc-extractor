@@ -1,0 +1,10 @@
+From: Harborline Logistics Inc
+Invoice Date: 2025-03-22
+
+Freight (pallet)         2    140.00     280.00
+Fuel surcharge           1     45.00      45.00
+Insurance                1     30.00      30.00
+
+Subtotal:     $355.00
+Tax:            28.40
+Total (USD):  $373.40

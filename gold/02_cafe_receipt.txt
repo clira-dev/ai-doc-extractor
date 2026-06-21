@@ -1,0 +1,12 @@
+From: Blue Door Cafe
+123 Harbor Rd
+Receipt  03/02/2025
+
+Flat White            2     4.50      9.00
+Almond Croissant      3     3.25      9.75
+Sparkling Water       1     2.50      2.50
+
+Subtotal      21.25
+Tax            1.81
+Total        $23.06
+Thank you!

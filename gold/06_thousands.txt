@@ -1,0 +1,10 @@
+From: Granite Datacenter Services
+Invoice Date: 2025-02-28
+
+Dedicated rack (annual)      1    9,600.00    9,600.00
+Bandwidth overage            3      450.00    1,350.00
+Remote hands                12      150.00    1,800.00
+
+Subtotal:        $12,750.00
+Sales tax:         1,083.75
+TOTAL DUE (USD): $13,833.75

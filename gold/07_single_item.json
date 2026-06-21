@@ -1,0 +1,11 @@
+{
+  "vendor": "QuickPrint Kiosk",
+  "date": "2025-03-30",
+  "currency": "USD",
+  "line_items": [
+    {"description": "Poster A1 matte", "qty": 1, "unit_price": 18.0, "amount": 18.0}
+  ],
+  "subtotal": 18.0,
+  "tax": 1.53,
+  "total": 19.53
+}

@@ -1,0 +1,12 @@
+Rechnung / Invoice
+From: Helvetic Bytes GmbH
+
+Invoice Date: 2025-01-31
+
+Item                              Qty   Unit        Line
+Consulting (hours)                 10   85.00       850.00
+Travel reimbursement                1   120.00      120.00
+
+Subtotal:                    €970.00
+VAT (7.7%):                   74.69
+Total (EUR):                €1,044.69

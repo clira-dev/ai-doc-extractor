@@ -1,0 +1,13 @@
+{
+  "vendor": "Harborline Logistics Inc",
+  "date": "2025-03-22",
+  "currency": "USD",
+  "line_items": [
+    {"description": "Freight (pallet)", "qty": 2, "unit_price": 140.0, "amount": 280.0},
+    {"description": "Fuel surcharge", "qty": 1, "unit_price": 45.0, "amount": 45.0},
+    {"description": "Insurance", "qty": 1, "unit_price": 30.0, "amount": 30.0}
+  ],
+  "subtotal": 355.0,
+  "tax": 28.40,
+  "total": 373.40
+}
