@@ -1,9 +1,12 @@
+![CI](https://github.com/clira-dev/ai-doc-extractor/actions/workflows/ci.yml/badge.svg)
+
 # Document Extraction Engine
 
-**Field-level accuracy: 100% on the gold set (8 labelled invoices/receipts);
-arithmetic-validation pass-rate: 87.5% (7/8 documents reconcile).** Every
-extraction carries a confidence score and routes low-confidence results to human
-review — so a wrong number gets a person, not a silent write to your ledger.
+**Turns messy invoice and receipt text into validated structured JSON — 27 tests;
+field-level precision/recall/accuracy measured on an 8-document labelled gold set
+with arithmetic validation.** Every extraction carries a confidence score and
+routes low-confidence results to human review — so a wrong number gets a person,
+not a silent write to your ledger.
 
 Those numbers come from a real, offline evaluation harness — not a hand-wave.
 Run `python3 evaluator.py` and reproduce them yourself in under a second, with no
@@ -13,6 +16,32 @@ number-coercion, and totals-reconciliation logic** against ground-truth JSON.
 It turns messy invoice, receipt, and order-email text into clean, validated
 structured JSON, with arithmetic reconciliation so bad extractions are caught
 before they reach your database.
+
+---
+
+## Architecture
+
+```mermaid
+flowchart TD
+    IN[Raw document text<br/>email / receipt / PDF paste] --> PATH{Extraction path}
+    PATH -->|deterministic default| PARSE[parse_document_text<br/>rule-based parser]
+    PATH -->|optional --llm| LLM[AnthropicClient + prompt]
+    LLM --> REPAIR[parse_llm_json<br/>fence strip → heuristic repair → retry]
+    PARSE --> NORM[normalize_extraction<br/>coerce numbers, dates, currency]
+    REPAIR --> NORM
+    NORM --> VAL[validate_extraction<br/>line items ≈ subtotal; subtotal + tax ≈ total]
+    VAL --> CONF[compute_confidence]
+    CONF --> OUT[Structured JSON<br/>confidence + validation + needs_review flag]
+    OUT -->|low confidence| REVIEW[Human review queue]
+    OUT -->|high confidence| DOWN[ERP / ledger / analytics]
+
+    GOLD_TXT[gold/*.txt fixtures] --> EVAL[evaluator.py]
+    GOLD_JSON[gold/*.json labels] --> EVAL
+    PARSE --> EVAL
+    NORM --> EVAL
+    VAL --> EVAL
+    EVAL --> METRICS[Per-field precision / recall / accuracy<br/>arithmetic pass-rate]
+```
 
 ---
 
@@ -149,6 +178,8 @@ ai-doc-extractor/
 ├── output/sample_output.json  # committed CLI output for sample_invoice.txt
 ├── test_extractor.py       # offline pytest suite (test doubles live here)
 ├── requirements.txt        # pytest only; anthropic optional
+├── pyproject.toml          # package metadata + ruff config
+├── .github/workflows/ci.yml
 └── README.md
 ```
 
