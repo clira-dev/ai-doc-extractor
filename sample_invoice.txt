@@ -1,0 +1,31 @@
+INVOICE #INV-2025-0847
+=====================================
+From:  Acme Cloud Supplies, LLC
+        742 Evergreen Terrace, Suite 12B
+        Springfield, IL 62704
+        billing@acmecloud.example
+
+Bill To:  Clira Demo Co.
+          88 Market Street, Floor 3
+          San Francisco, CA 94105
+
+Invoice Date:  March 14, 2025
+Due Date:      April 13, 2025
+PO Ref:        PO-CLIRA-9912
+
+-------------------------------------
+DESCRIPTION                          QTY    UNIT       AMOUNT
+-------------------------------------
+Managed Postgres (prod)               1    $149.00    $149.00
+Object storage — 500 GB tier          1     45.00      45.00
+Premium support (monthly)             2     25.50      51.00
+Setup fee (one-time)                  1    120.00     120.00
+-------------------------------------
+
+                          Subtotal:           $365.00
+                          Sales tax (8.5%):    31.03
+                          ---------------------------
+                          TOTAL DUE (USD):    $396.03
+
+Payment terms: Net 30. Please remit to routing 021000021 / acct 8844221.
+Questions? Reply to billing@acmecloud.example — ref INV-2025-0847.
